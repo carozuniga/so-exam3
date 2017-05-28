@@ -79,7 +79,11 @@ end
 ```
 Capturas de pantalla del dashboard de uchiwa:
 
+![][1]
+
 Captura de la caida del servicio, despues de ejecutar el comando service httpd stop se observa la alerta y el historial pasa de tener ceros a unos:
+
+![][2]
 
 5. El plugin de sensu instalado verifica la memoria RAM del equipo, el archivo de configuración del plugin (/etc/sensu/conf.d/check_ram.rb) es el siguiente:
 
@@ -98,10 +102,10 @@ Captura de la caida del servicio, despues de ejecutar el comando service httpd s
 ```
 Este check tiene las siguientes salidas:
 
-0       CheckRAM OK: 65% free RAM left
-1       CheckRAM WARNING: 40% free RAM left
-2       CheckRAM CRITICAL: 13% free RAM left
-3       CheckRAM UNKNOWN: invalid percentage
+- 0       CheckRAM OK: 65% free RAM left
+- 1       CheckRAM WARNING: 40% free RAM left
+- 2       CheckRAM CRITICAL: 13% free RAM left
+- 3       CheckRAM UNKNOWN: invalid percentage
 
 El API para este check (/etc/sensu/plugins/check-ram.rb) es el siguiente:
 
@@ -144,7 +148,9 @@ class CheckRAM < Sensu::Plugin::Check::CLI
   end
 end
 ```
-Capturas de pantalla del check de ram en el dashboard de uchiwa:
+Capturas de pantalla del check de ram (RAM_USAGE) en el dashboard de uchiwa:
+
+![][3]
 
 6. El handler de slack se configuró para los dos checks vistos anteriormente, el codigo de configuración del handler de slack (/etc/sensu/conf.d/handler_slack.json) es el siguiente:
 
@@ -166,15 +172,73 @@ Capturas de pantalla del check de ram en el dashboard de uchiwa:
 ```
 Para obtener la url webhook cree un canal propio en slack y una app. En el API de la misma se debe activar y generar los "incoming webhooks" como se muestra a continuación:
 
+![][4]
+
 Captura de pantalla de las notificaciones del check de ram:
+
+![][5]
 
 7. Para la instalación y configuración del stack de ELK se siguieron las instrucciones de https://gist.github.com/d4n13lbc/be1ad5039dff1c058b335482488d4965 que fueron vistas en clase, se siguieron las instrucciones tanto para el servidor como para el cliente.
 
 Capturas verificando el estado del servicio:
 
+![][6]
+
+![][7]
+
+![][8]
+
+8. Se implementó el ejemplo https://github.com/elastic/examples/tree/master/ElasticStack_twitter, para este ejemplo se creo el siguiente archivo de configuración 
+
+```
+input {
+  twitter {
+    consumer_key       => "3NvlwpBFSjC2e5RzqW89pp0Sp"
+    consumer_secret    => "d9gC2rOPMQNiVZbWxolkZ7qg6yc97wPg1I1FAqmt3PodsXKWyX"
+    oauth_token        => "125781364-xyaQNE5ll6eK5Xre4ixrJtCrWBwCBYkOQqKbfc4O"
+    oauth_token_secret => "OADnesSPd3tyPbp0nU2ue33HIXh35V8KRPBsVMPzaIxcH"
+    keywords           => [ "thor", "spiderman", "wolverine", "ironman", "hulk"]
+    full_tweet         => true
+  }
+}
+
+filter { }
+
+output {
+  stdout {
+    codec => dots
+  }
+  elasticsearch {
+      hosts => "192.168.192.130:9200"
+      index         => "twitter_elastic_example"
+      document_type => "tweets"
+      template      => "./twitter_template.json"
+      template_name => "twitter_elastic_example"
+      template_overwrite => true
+  }
+}
+
+```
+Para este archivo fue necesario crear una app de twitter para poder obtener los datos del input, los demás archivos de configuración se dejaron igual a los que se encuentran en el repositorio.
+
+Al correr el archivo de configuración podemos acceder al dashboard de kibana y observar los tweets de acuerdo con las keywords que se establecieron: 
+
+![][9]
 
 
+### Referencias
+
+- http://www.programblings.com/2013/11/06/creating-a-sensu-check/
+- https://github.com/elastic/examples/tree/master/ElasticStack_twitter
 
 
-
+[1]: Images/uchiwa1.PNG
+[2]: Images/uchiwa2.PNG
+[3]: Images/uchiwa3.PNG
+[4]: Images/hook.PNG
+[5]: Images/slack.PNG
+[6]: Images/status.PNG
+[7]: Images/elastic.PNG
+[8]: Images/kibana.PNG
+[9]: Images/twitter.PNG
 
