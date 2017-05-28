@@ -219,7 +219,9 @@ output {
 }
 
 ```
-Para este archivo fue necesario crear una app de twitter para poder obtener los datos del input, los demás archivos de configuración se dejaron igual a los que se encuentran en el repositorio.
+Para este archivo fue necesario crear una app de twitter para poder obtener los datos del input, los demás archivos de configuración se dejaron igual a los que se encuentran en el repositorio. Captura de la app de twitter: 
+
+![][10]
 
 Al correr el archivo de configuración podemos acceder al dashboard de kibana y observar los tweets de acuerdo con las keywords que se establecieron: 
 
@@ -241,4 +243,4 @@ Al correr el archivo de configuración podemos acceder al dashboard de kibana y 
 [7]: Images/elastic.PNG
 [8]: Images/kibana.PNG
 [9]: Images/twitter.PNG
-
+[10]: Images/twitterapp.PNG
